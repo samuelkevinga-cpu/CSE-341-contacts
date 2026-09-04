@@ -1,13 +1,18 @@
 const express = require('express');
 const app = express();
+const mongodb = require('./db/connect');
 
-const PORT = process.env.PORT || 8080;
+const port = process.env.PORT || 8080;
 
-// Basic route returning "Hello World"
-app.get('/', (req, res) => {
-    res.send('Hello World');
-});
+app.use('/', require('./routes'));
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+mongodb.initDb((err) => {
+    if (err) {
+        console.error('Failed to connect to MongoDB:', err.message);
+        process.exit(1);
+    } else {
+        app.listen(port, () => {
+            console.log(`Connected to DB and listening on port ${port}`);
+        });
+    }
 });
